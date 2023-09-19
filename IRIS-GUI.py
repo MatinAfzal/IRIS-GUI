@@ -21,7 +21,7 @@ from sklearn.metrics import confusion_matrix, accuracy_score, recall_score, prec
 # File identity information
 __author__ = 'Matin Afzal (contact.matin@yahoo.com)'
 __version__ = '0.0.1'
-__last_modification__ = '2023/09/17'
+__last_modification__ = '2023/09/19'
 
 # Paths
 iris_types_image = r"iristypes.png"
