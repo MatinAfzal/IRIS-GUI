@@ -18,16 +18,23 @@ https://github.com/MatinAfzal/IRIS-GUI/assets/128434167/4171bbea-6f6b-4e70-ada3-
 ## Installation
 You can clone this repository:
 
----
-    git clone https://github.com/MatinAfzal/IRIS-GUI
----
+```bash
+git clone https://github.com/MatinAfzal/IRIS-GUI
+```
+
+Then Install the Dependency And Library
+
+```bash
+pip install -r requirements.txt
+```
+
+Then Run Project with
+
+```
+py IRIS-GUI.py
+```
 
 # A word from the author
 If this code is useful to you make me happy by giving me a star.
 
 You can also follow me on GitHub for more...
-
-## Creator
-- Created by Matin Afzal
-- E-mail: contact.matin@yahoo.com
-- Github: [@MatinAfzal](https://www.github.com/MatinAfzal)

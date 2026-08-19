@@ -16,7 +16,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import confusion_matrix, accuracy_score, recall_score, precision_score
+from sklearn.metrics import accuracy_score, recall_score, precision_score
 
 # File identity information
 __author__ = 'Matin Afzal (contact.matin@yahoo.com)'
@@ -30,6 +30,11 @@ iris_types_image = r"iristypes.png"
 iris_ds = load_iris()
 
 # Functions
+def validate_input(values: list) -> bool:
+    """Validate that input values are within realistic iris feature ranges"""
+    ranges = [(4, 8), (2, 4), (1, 7), (0, 2.5)]  # sepal_len, sepal_width, petal_len, petal_width
+    return all(ranges[i][0] <= val <= ranges[i][1] for i, val in enumerate(values))
+
 def predict(modelnumber: int, dataset: np.ndarray) -> None:
     """
     modelnumber _ int
@@ -40,7 +45,7 @@ def predict(modelnumber: int, dataset: np.ndarray) -> None:
                       4, RandomForestClassifier
     """
 
-    modelnumber = modelnumber.get()
+    modelnumber = int(modelnumber.get())
 
     # Data pre processing
     iris_df = pd.DataFrame(dataset.data)
@@ -51,19 +56,23 @@ def predict(modelnumber: int, dataset: np.ndarray) -> None:
 
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25, random_state=0)
 
-    x_input = np.array(
-        [[float(f_0_spin.get()),
-          float(f_1_spin.get()),
-          float(f_2_spin.get()),
-          float(f_3_spin.get())]]
-    )
+    try:
+        input_values = [float(f_0_spin.get()),
+                       float(f_1_spin.get()),
+                       float(f_2_spin.get()),
+                       float(f_3_spin.get())]
+    except ValueError:
+        messagebox.showerror("Input error", "Please enter valid numeric values")
+        return
 
-    if np.any(x_input) == False:
-        messagebox.showerror("Input error", f"Enter the x values")
-        # print(iris_df.sample(5))
+    x_input = np.array([input_values])
+
+    if not validate_input(input_values):
+        messagebox.showwarning("Input warning", "Values outside typical iris ranges:\nSepal Length: 4-8cm, Sepal Width: 2-4cm\nPetal Length: 1-7cm, Petal Width: 0-2.5cm")
+        return
 
     # Model selection and top level result window
-    elif modelnumber == "0":
+    if modelnumber == 0:
         LR = LogisticRegression(max_iter=1000)
         LR.fit(x_train, y_train)
         pred = LR.predict(x_test)
@@ -74,7 +83,7 @@ def predict(modelnumber: int, dataset: np.ndarray) -> None:
 
         messagebox.showinfo("Predict result", f"Logistic Regression predict: {check_result(LR, x_input)}")
 
-    elif modelnumber == "1":
+    elif modelnumber == 1:
         KNN = KNeighborsClassifier()
         KNN.fit(x_train, y_train)
         pred = KNN.predict(x_test)
@@ -85,7 +94,7 @@ def predict(modelnumber: int, dataset: np.ndarray) -> None:
 
         messagebox.showinfo("Predict result", f"KNeighbors Classifier predict: {check_result(KNN, x_input)}")
 
-    elif modelnumber == "2":
+    elif modelnumber == 2:
         SVCR = SVC()
         SVCR.fit(x_train, y_train)
         pred = SVCR.predict(x_test)
@@ -96,7 +105,7 @@ def predict(modelnumber: int, dataset: np.ndarray) -> None:
 
         messagebox.showinfo("Predict result", f"Support Vector Classification predict: {check_result(SVCR, x_input)}")
 
-    elif modelnumber == "3":
+    elif modelnumber == 3:
         DTC = DecisionTreeClassifier()
         DTC.fit(x_train, y_train)
         pred = DTC.predict(x_test)
@@ -107,7 +116,7 @@ def predict(modelnumber: int, dataset: np.ndarray) -> None:
 
         messagebox.showinfo("Predict result", f"Decision Tree Classifier predict: {check_result(DTC, x_input)}")
 
-    elif modelnumber == "4":
+    elif modelnumber == 4:
         RFC = RandomForestClassifier()
         RFC.fit(x_train, y_train)
         pred = RFC.predict(x_test)
@@ -122,13 +131,9 @@ def check_result(model, x) -> str:
     """
     checks iris predict type
     """
-    y = model.predict(x)
-    if y == [0]:
-        return 'setosa'
-    elif y == [1]:
-        return 'versicolor'
-    elif y == [2]:
-        return 'virginica'
+    y = model.predict(x)[0]
+    iris_classes = {0: 'setosa', 1: 'versicolor', 2: 'virginica'}
+    return iris_classes.get(y, 'unknown')
 
 # Iris GUI window init
 IG = Tk()
@@ -137,10 +142,14 @@ IG.resizable(width=False, height=False)
 IG.geometry("700x510")
 
 # Iris image canva
-img = PhotoImage(file=iris_types_image)
-imc = Canvas(IG, width=600, height=224)
-imc.create_image(300, 108, image=img)
-imc.pack()
+try:
+    img = PhotoImage(file=iris_types_image)
+    imc = Canvas(IG, width=600, height=224)
+    imc.create_image(300, 108, image=img)
+    imc.pack()
+except Exception as e:
+    messagebox.showerror("Image Error", f"Cannot load image '{iris_types_image}': {e}")
+    img = None
 
 # Feature selection frame
 featureFrame = Frame(IG)
@@ -179,7 +188,7 @@ modelSelection = Frame(IG)
 modelSelection.pack(fill="both", side="bottom", ipady=93)
 
 # radio buttons configure
-rb_vals = [("Logesic Regression", 0),
+rb_vals = [("Logistic Regression", 0),
            ("KNeighbors Classifier", 1),
            ("Support Vector Classification", 2),
            ("Decision Tree Classifier", 3),
@@ -199,7 +208,7 @@ extraValuesLabel = Label(modelSelection, text="Extra values:", fg="black")
 extraValuesLabel.grid(padx=0, pady=0, row=0, column=1)
 
 # Evaluation information
-accuarcyLabel = Label(modelSelection, text="Accuarcy %:")
+accuarcyLabel = Label(modelSelection, text="Accuracy %:")
 accuarcyLabel.grid(padx=0, pady=0, row=1, column=1, sticky="w")
 accuarcyValLabel = Label(modelSelection, text="0")
 accuarcyValLabel.grid(padx=0, pady=0, row=1, column=2)
