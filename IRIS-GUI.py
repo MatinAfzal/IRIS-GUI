@@ -4,11 +4,13 @@
 # contact.matin@yahoo.com
 ############################################################################
 
+import os
 import numpy as np
 import pandas as pd
-from tkinter import *
+import customtkinter as ctk
 from tkinter import messagebox
 from functools import partial
+from PIL import Image
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
@@ -20,11 +22,11 @@ from sklearn.metrics import accuracy_score, recall_score, precision_score
 
 # File identity information
 __author__ = 'Matin Afzal (contact.matin@yahoo.com)'
-__version__ = '0.0.1'
-__last_modification__ = '2023/09/19'
+__version__ = '0.0.2'
+__last_modification__ = '2026/11/19'
 
 # Paths
-iris_types_image = r"iristypes.png"
+iris_types_image = os.path.join(os.path.dirname(__file__), "iristypes.png")
 
 # Dataset
 iris_ds = load_iris()
@@ -136,55 +138,55 @@ def check_result(model, x) -> str:
     return iris_classes.get(y, 'unknown')
 
 # Iris GUI window init
-IG = Tk()
+IG = ctk.CTk()
 IG.title("IRIS GUI")
 IG.resizable(width=False, height=False)
 IG.geometry("700x510")
 
 # Iris image canva
 try:
-    img = PhotoImage(file=iris_types_image)
-    imc = Canvas(IG, width=600, height=224)
-    imc.create_image(300, 108, image=img)
+    pil_img = Image.open(iris_types_image)
+    img = ctk.CTkImage(light_image=pil_img, dark_image=pil_img, size=(600, 224))
+    imc = ctk.CTkLabel(IG, image=img, text="")
     imc.pack()
 except Exception as e:
-    messagebox.showerror("Image Error", f"Cannot load image '{iris_types_image}': {e}")
+    messagebox.showerror("Image Error", f"Cannot load image: {e}")
     img = None
 
 # Feature selection frame
-featureFrame = Frame(IG)
+featureFrame = ctk.CTkFrame(IG)
 featureFrame.pack(fill="x", side="top", ipadx=350)
 
 ## feature 0 , SepalLenght cm , label and spinbox
-f_0_label = Label(featureFrame, text="SepalLength (cm)")
+f_0_label = ctk.CTkLabel(featureFrame, text="SepalLength (cm)")
 f_0_label.grid(padx=50, pady=0)
 
-f_0_spin = Spinbox(featureFrame, width=10, bd=2, font="20", from_=0, to=100, increment=0.1)
+f_0_spin = ctk.CTkEntry(featureFrame, width=100, font=("", 20))
 f_0_spin.grid(padx=50, pady=10)
 
 ## feature 1 , SepalWidth cm , label and spinbox
-f_1_label = Label(featureFrame, text="SepalWidth (cm)")
+f_1_label = ctk.CTkLabel(featureFrame, text="SepalWidth (cm)")
 f_1_label.grid(padx=0, pady=10, row=0, column=1)
 
-f_1_spin = Spinbox(featureFrame, width=10, bd=2, font="20", from_=0, to=100, increment=0.1)
+f_1_spin = ctk.CTkEntry(featureFrame, width=100, font=("", 20))
 f_1_spin.grid(padx=0, pady=10, row=1, column=1)
 
 ## feature 2 , PetalLength cm , label and spinbox
-f_2_label = Label(featureFrame, text="PetalLength (cm)")
+f_2_label = ctk.CTkLabel(featureFrame, text="PetalLength (cm)")
 f_2_label.grid(padx=0, pady=10, row=0, column=2)
 
-f_2_spin = Spinbox(featureFrame, width=10, bd=2, font="20", from_=0, to=100, increment=0.1)
+f_2_spin = ctk.CTkEntry(featureFrame, width=100, font=("", 20))
 f_2_spin.grid(padx=50, pady=10, row=1, column=2)
 
 ## feature 3 ,  PetalWidth cm , label and spinbox
-f_3_label = Label(featureFrame, text="PetalWidth (cm)")
+f_3_label = ctk.CTkLabel(featureFrame, text="PetalWidth (cm)")
 f_3_label.grid(padx=0, pady=10, row=0, column=3)
 
-f_3_spin = Spinbox(featureFrame, width=10, bd=2, font="20", from_=0, to=100, increment=0.1)
+f_3_spin = ctk.CTkEntry(featureFrame, width=100, font=("", 20))
 f_3_spin.grid(padx=0, pady=10, row=1, column=3)
 
 # Model selection frame
-modelSelection = Frame(IG)
+modelSelection = ctk.CTkFrame(IG)
 modelSelection.pack(fill="both", side="bottom", ipady=93)
 
 # radio buttons configure
@@ -194,38 +196,37 @@ rb_vals = [("Logistic Regression", 0),
            ("Decision Tree Classifier", 3),
            ("Random Forest Classifier", 4)]
 
-val = StringVar(modelSelection, "0")
+val = ctk.StringVar(modelSelection, "0")
 
 for (text, value) in rb_vals:
-    Radiobutton(modelSelection, text = text, variable = val,
-                value = value, indicator = 0,
-                background = "light blue").grid(padx=50, pady=5, sticky="w")
+    ctk.CTkRadioButton(modelSelection, text = text, variable = val,
+                value = value, fg_color = "light blue").grid(padx=50, pady=5, sticky="w")
 
 # Extra values
-extraValues = Entry(modelSelection, width=24, bd=2, font="bold", fg="black")
+extraValues = ctk.CTkEntry(modelSelection, width=240, font=("", 14, "bold"), text_color="black")
 extraValues.grid(padx=80, pady=0, row=0, column=2, sticky="w")
-extraValuesLabel = Label(modelSelection, text="Extra values:", fg="black")
+extraValuesLabel = ctk.CTkLabel(modelSelection, text="Extra values:", text_color="black")
 extraValuesLabel.grid(padx=0, pady=0, row=0, column=1)
 
 # Evaluation information
-accuarcyLabel = Label(modelSelection, text="Accuracy %:")
+accuarcyLabel = ctk.CTkLabel(modelSelection, text="Accuracy %:")
 accuarcyLabel.grid(padx=0, pady=0, row=1, column=1, sticky="w")
-accuarcyValLabel = Label(modelSelection, text="0")
+accuarcyValLabel = ctk.CTkLabel(modelSelection, text="0")
 accuarcyValLabel.grid(padx=0, pady=0, row=1, column=2)
 
-recallLabel = Label(modelSelection, text="Recall:")
+recallLabel = ctk.CTkLabel(modelSelection, text="Recall:")
 recallLabel.grid(padx=0, pady=0, row=2, column=1, sticky="w")
-recallValLabel = Label(modelSelection, text="0")
+recallValLabel = ctk.CTkLabel(modelSelection, text="0")
 recallValLabel.grid(padx=0, pady=0, row=2, column=2)
 
-precisionLabel = Label(modelSelection, text="Precision:")
+precisionLabel = ctk.CTkLabel(modelSelection, text="Precision:")
 precisionLabel.grid(padx=0, pady=0, row=3, column=1, sticky="w")
-precisionValLabel = Label(modelSelection, text="0")
+precisionValLabel = ctk.CTkLabel(modelSelection, text="0")
 precisionValLabel.grid(padx=0, pady=0, row=3, column=2)
 
 # Predict button
 load_predict = partial(predict, val, iris_ds)
-predictButton = Button(modelSelection, text="Predict!", font="bold", fg="red", bd=2, command=load_predict)
+predictButton = ctk.CTkButton(modelSelection, text="Predict!", font=("", 14, "bold"), fg_color="red", command=load_predict)
 predictButton.grid(padx=0, pady=5, row=4, column=2)
 
 # Program main loop
