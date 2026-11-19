@@ -22,8 +22,8 @@ from sklearn.metrics import accuracy_score, recall_score, precision_score
 
 # File identity information
 __author__ = 'Matin Afzal (contact.matin@yahoo.com)'
-__version__ = '0.0.1'
-__last_modification__ = '2023/09/19'
+__version__ = '0.0.2'
+__last_modification__ = '2026/11/19'
 
 # Paths
 iris_types_image = os.path.join(os.path.dirname(__file__), "iristypes.png")
