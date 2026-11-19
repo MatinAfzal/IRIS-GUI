@@ -13,7 +13,7 @@ Click [here](https://archive.ics.uci.edu/dataset/53/iris) to see the main iris r
 # What does IRIS-GUI do?
 This program receives the length and width of the iris sepal and petal from the user and the user can predict the type of iris flower with different machine learning models.
 
-https://github.com/MatinAfzal/IRIS-GUI/assets/128434167/4171bbea-6f6b-4e70-ada3-a6dfb0bff27b
+![Demo](image.png)
 
 ## Installation
 You can clone this repository:
